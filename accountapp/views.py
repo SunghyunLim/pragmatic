@@ -1,6 +1,6 @@
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render
 
 # Create your views here.
@@ -46,8 +46,32 @@ class AccountUpdateView(UpdateView):
     success_url = reverse_lazy('accountapp:hello_world')
     template_name = 'accountapp/update.html'
 
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated and self.get_object()  == self.request.user:
+            return super().post(*args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+    def post(self, *args, **kwargs):
+        if self.request.user.is_authenticated and self.get_object()  == self.request.user:
+            return super().post(*args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+
 class AccountDeleteView(DeleteView):
     model = User
     context_object_name = 'target_user'
     success_url =  reverse_lazy('accountapp:login')
     template_name = 'accountapp/delete.html'
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated and self.get_object()  == self.request.user:
+            return super().post(*args, **kwargs)
+        else:
+            return HttpResponseForbidden()
+
+    def post(self, *args, **kwargs):
+        if self.request.user.is_authenticated and self.get_object()  == self.request.user:
+            return super().post(*args, **kwargs)
+        else:
+            return HttpResponseForbidden()
